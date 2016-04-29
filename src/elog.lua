@@ -17,8 +17,7 @@ function elog.pin_up(level)
   end
 end
 
-function elog.init(p, c)
-  if (c ~= nil) then counter = c end
+function elog.init(p)
   pin = p
   gpio.mode(pin, gpio.INT)
   timestamp = tmr.now()

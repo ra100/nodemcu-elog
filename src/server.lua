@@ -1,4 +1,6 @@
 local elog = require 'elog'
+local counter = 0
+local timestamp = tmr.now()
 
 function get_metrics()
   local c = elog.getCounter()
@@ -39,9 +41,7 @@ function init_server()
   end)
 end
 
-local counter = 0
-
-elog.init(PIN, counter)
+elog.init(PIN)
 
 wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
   wifi.sta.eventMonStop("unreg all")
@@ -50,3 +50,12 @@ wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
 end)
 
 wifi.sta.eventMonStart()
+
+tmr.alarm(1, 120*1000, function()
+  local c = elog.getCounter()
+  if c == counter then
+    node.restart()
+  else
+    counter = c
+  end
+end)
