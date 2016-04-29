@@ -3,14 +3,9 @@ local elog = {}
 local counter = 0
 local timestamp = 0
 local pin = 1
-local cache = 'meter.txt'
 
 function elog.counterUp()
   counter = counter + 1
-  print(counter)
-  file.open(cache, 'w+')
-  file.writeline(counter)
-  file.close()
 end
 
 function elog.pin_up(level)
@@ -22,9 +17,8 @@ function elog.pin_up(level)
   end
 end
 
-function elog.init(p, cf, c)
+function elog.init(p, c)
   if (c ~= nil) then counter = c end
-  if (cf ~= nil) then cache = cf end
   pin = p
   gpio.mode(pin, gpio.INT)
   timestamp = tmr.now()

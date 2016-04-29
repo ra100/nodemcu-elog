@@ -39,18 +39,9 @@ function init_server()
   end)
 end
 
-local files = file.list()
-local counter = nil
-if (files[CACHE]) then
-  if file.open(CACHE, 'r') then
-    local state = tonumber(file.read(0))
-    print(state)
-    file.close()
-    counter = state
-  end
-end
+local counter = 0
 
-elog.init(PIN, CACHE, counter)
+elog.init(PIN, counter)
 
 wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
   wifi.sta.eventMonStop("unreg all")
