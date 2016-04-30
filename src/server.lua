@@ -30,7 +30,24 @@ function push_metrics()
   end)
 end
 
-elog.init(PIN)
+function load_counter()
+  if file.exists("meter.txt") then
+    if file.open("meter.txt", 'r') then
+      local state = tonumber(file.read(0))
+      file.close()
+      counter = state
+    end
+  end
+end
+
+function save_counter()
+  file.open("meter.txt", 'w+')
+  file.writeline(counter)
+  file.close()
+end
+
+load_counter()
+elog.init(PIN, counter)
 
 wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
   wifi.sta.eventMonStop("unreg all")
@@ -44,7 +61,9 @@ wifi.sta.eventMonStart()
 tmr.alarm(1, RESTARTINTERVAL * 1000, 1, function()
   local c = elog.getCounter()
   if c == counter then
-    node.restart()
+    push_metrics()
+    save_counter()
+    tmr.alarm(4, 3, 0, node.restart)
   else
     counter = c
   end
