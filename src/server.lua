@@ -5,13 +5,13 @@ function get_metrics()
   local c = elog.getCounter()
   local d = "# HELP power_meter Power consumption in Wh\n"
   .. "# TYPE power_meter counter\n"
-  .. "power_meter{graphname=\"power_meter\",label=\"power\",type=\"counter\"} " .. tostring(c) .. "\n"
+  .. "power_meter{graphname=\"power_meter\",instance=\"power\",label=\"power\",type=\"counter\"} " .. tostring(c) .. "\n"
   .. "# HELP nodemcu_heap nodeMCU heap\n"
   .. "# TYPE nodemcu_heap gauge\n"
-  .. "nodemcu_heap{graphname=\"nodemcu\",label=\"heap\",type=\"gauge\"} " .. tostring(node.heap()) .. "\n"
+  .. "nodemcu_heap{graphname=\"nodemcu\",instance=\"power\",label=\"heap\",type=\"gauge\"} " .. tostring(node.heap()) .. "\n"
   .. "# HELP nodemcu_vdd33 nodeMCU system voltage\n"
   .. "# TYPE nodemcu_vdd33 gauge\n"
-  .. "nodemcu_vdd33{graphname=\"nodemcu\",label=\"vdd33\",type=\"gauge\"} " .. tostring(adc.readvdd33()/1000) .. "\n";
+  .. "nodemcu_vdd33{graphname=\"nodemcu\",instance=\"power\",label=\"vdd33\",type=\"gauge\"} " .. tostring(adc.readvdd33()/1000) .. "\n";
   return d
 end
 
@@ -22,8 +22,9 @@ function push_metrics()
   function(code, data)
     if (code < 0) then
       print("HTTP request failed")
-      tmr.alarm(2, 60*1000, 0, push_metrics)
+      tmr.alarm(2, 5*1000, 0, push_metrics)
     else
+      print("Metrics pushed")
       collectgarbage()
     end
   end)
@@ -35,12 +36,12 @@ wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
   wifi.sta.eventMonStop("unreg all")
   print(wifi.sta.getip())
   push_metrics()
-  tmr.alarm(0, PUSHINTERVAL * 1000, 1, push_metrics)
+  tmr.alarm(3, PUSHINTERVAL * 1000, 1, push_metrics)
 end)
 
 wifi.sta.eventMonStart()
 
-tmr.alarm(1, RESTARTINTERVAL*1000, 1, function()
+tmr.alarm(1, RESTARTINTERVAL * 1000, 1, function()
   local c = elog.getCounter()
   if c == counter then
     node.restart()
