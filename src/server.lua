@@ -16,6 +16,7 @@ function get_metrics()
 end
 
 function push_metrics()
+  save_counter()
   http.post(PUSHGATEWAY,
   'Content-Type: text/plain; version=0.0.4\r\n',
   get_metrics(),
@@ -62,7 +63,6 @@ tmr.alarm(1, RESTARTINTERVAL * 1000, 1, function()
   local c = elog.getCounter()
   if c == counter then
     push_metrics()
-    save_counter()
     tmr.alarm(4, 3, 0, node.restart)
   else
     counter = c
