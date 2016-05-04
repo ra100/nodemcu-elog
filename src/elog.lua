@@ -6,6 +6,7 @@ local pin = 1
 
 function elog.counterUp()
   counter = counter + 1
+  print(counter)
 end
 
 function elog.pin_up(level)

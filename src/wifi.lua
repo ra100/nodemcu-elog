@@ -1,5 +1,5 @@
 wifi.setmode(wifi.STATION)
 wifi.sleeptype(wifi.MODEM_SLEEP)
 wifi.sta.config(SSID,PASSWORD)
-wifi.sta.connect()
 wifi.sta.setip({ip=IP,netmask="255.255.255.0",gateway=GETEWAYIP})
+wifi.sta.connect()

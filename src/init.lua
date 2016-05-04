@@ -20,5 +20,5 @@ for i,f in ipairs(files) do
 end
 
 dofile('config.lc')
-dofile('server.lc')
 dofile('wifi.lc')
+dofile('server.lc')

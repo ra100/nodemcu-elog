@@ -11,12 +11,14 @@ function get_metrics()
   .. "nodemcu_heap{graphname=\"nodemcu\",instance=\"power\",label=\"heap\",type=\"gauge\"} " .. tostring(node.heap()) .. "\n"
   .. "# HELP nodemcu_vdd33 nodeMCU system voltage\n"
   .. "# TYPE nodemcu_vdd33 gauge\n"
-  .. "nodemcu_vdd33{graphname=\"nodemcu\",instance=\"power\",label=\"vdd33\",type=\"gauge\"} " .. tostring(adc.readvdd33()/1000) .. "\n";
+  .. "nodemcu_vdd33{graphname=\"nodemcu\",instance=\"power\",label=\"vdd33\",type=\"gauge\"} " .. tostring(adc.readvdd33()/1000) .. "\n"
+  .. "# HELP nodemcu_uptime nodeMCU uptime\n"
+  .. "# TYPE nodemcu_uptime counter\n"
+  .. "nodemcu_uptime{graphname=\"nodemcu\",instance=\"power\",label=\"uptime\",type=\"counter\"} " .. tostring(tmr.time()) .. "\n";
   return d
 end
 
 function push_metrics()
-  save_counter()
   http.post(PUSHGATEWAY,
   'Content-Type: text/plain; version=0.0.4\r\n',
   get_metrics(),
@@ -31,29 +33,11 @@ function push_metrics()
   end)
 end
 
-function load_counter()
-  if file.exists("meter.txt") then
-    if file.open("meter.txt", 'r') then
-      local state = tonumber(file.read(0))
-      file.close()
-      counter = state
-    end
-  end
-end
-
-function save_counter()
-  file.open("meter.txt", 'w+')
-  file.writeline(counter)
-  file.close()
-end
-
-load_counter()
 elog.init(PIN, counter)
 
 wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
   wifi.sta.eventMonStop("unreg all")
   print(wifi.sta.getip())
-  push_metrics()
   tmr.alarm(3, PUSHINTERVAL * 1000, 1, push_metrics)
 end)
 
