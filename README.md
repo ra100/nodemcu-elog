@@ -30,7 +30,7 @@ AVR Arduino UNO (or similar) [on ebay](http://www.ebay.com/itm/200982532672)
 
     -   `PIN` - pin number default 1 for D1
 
-    -   `MIN_PW` - minimum wait time till script registers new impulse
+    -   `MIN_PW` - minimum wait time (in ms) till script registers new impulse
     (prevents logging light echo)
 
     -   `SSID` - your WiFi SSID
@@ -44,11 +44,13 @@ AVR Arduino UNO (or similar) [on ebay](http://www.ebay.com/itm/200982532672)
 
     -   `REFRESHINTERVAL` - in seconds how often should logger detect if
     logging is still working, if counter doesn't increase value for X seconds
-    nodemcu restarts
+    nodemcu pushes last metrics and restarts
 
     -   `PUSHGATEWAY` - url of pushgateway server
 
     -   `PUSHINTERVAL` - how often should metrics be pushed (in seconds)
+
+    -   `DEBUG` - debug flag true or false
 
 -   Upload all `.lua` files to nodemcu and restart
 
