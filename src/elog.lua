@@ -2,7 +2,7 @@ local elog = {}
 
 local counter = 0
 local pin = 1
-local min_pw = 20000
+local min_pw = 20
 local pulse_detected = 0
 
 function elog.counterUp()
@@ -18,7 +18,7 @@ end
 
 function elog.init(p)
   pin = p
-  min_pw = MIN_PW * 1000
+  min_pw = MIN_PW
   gpio.mode(pin, gpio.INT)
   gpio.trig(pin, "up", elog.pin_up)
   tmr.alarm(4, MIN_PW, 1, elog.checkPulse);
