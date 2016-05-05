@@ -18,37 +18,42 @@ function get_metrics()
   return d
 end
 
-function push_metrics()
+function push_metrics(cb)
   http.post(PUSHGATEWAY,
   'Content-Type: text/plain; version=0.0.4\r\n',
   get_metrics(),
   function(code, data)
     if (code < 0) then
       print("HTTP request failed")
-      tmr.alarm(2, 5*1000, 0, push_metrics)
+      tmr.alarm(2, 10*1000, 0, push_metrics)
     else
       print("Metrics pushed")
       collectgarbage()
+      if not cb == nil then
+        cb()
+      end
     end
   end)
 end
 
-elog.init(PIN, counter)
+function restart()
+  node.restart();
+end
+
+elog.init(PIN)
+tmr.alarm(3, PUSHINTERVAL * 1000, 1, push_metrics)
 
 wifi.sta.eventMonReg(wifi.STA_GOTIP, function()
   wifi.sta.eventMonStop("unreg all")
   print(wifi.sta.getip())
-  tmr.alarm(3, PUSHINTERVAL * 1000, 1, push_metrics)
 end)
 
 wifi.sta.eventMonStart()
 
 tmr.alarm(1, RESTARTINTERVAL * 1000, 1, function()
-  local c = elog.getCounter()
-  if c == counter then
-    push_metrics()
-    tmr.alarm(4, 3, 0, node.restart)
+  if (elog.getCounter() == counter) then
+    push_metrics(restart)
   else
-    counter = c
+    counter = elog.getCounter()
   end
 end)

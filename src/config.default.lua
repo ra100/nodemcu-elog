@@ -1,9 +1,10 @@
-PIN = 1
-MIN_PW = 20
+PIN = 1 -- signal pin
+MIN_PW = 20 -- miliseconds
 SSID = 'SSID'
 PASSWORD = 'PASSWORD'
 GATEWAYIP = '192.168.150.1'
 IP = 'ST.AT.IC.IP'
-RESTARTINTERVAL = 20
+RESTARTINTERVAL = 30 -- in seconds
 PUSHGATEWAY = 'http://SE.RV.ER.IP:9091/metrics/job/power/instance/HOSTNAME'
-PUSHINTERVAL = 60
+PUSHINTERVAL = 60 -- in seconds
+DEBUG = false

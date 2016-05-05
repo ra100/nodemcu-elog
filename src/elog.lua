@@ -1,29 +1,34 @@
 local elog = {}
 
 local counter = 0
-local timestamp = 0
 local pin = 1
+local min_pw = 20000
+local pulse_detected = 0
 
 function elog.counterUp()
   counter = counter + 1
-  print(counter)
+  if DEBUG then print(counter) end
 end
 
 function elog.pin_up(level)
   if (level == gpio.HIGH) then
-    if (tmr.now() - timestamp > MIN_PW) then
-      timestamp = tmr.now()
-      elog.counterUp()
-    end
+    pulse_detected = 1
   end
 end
 
-function elog.init(p, c)
+function elog.init(p)
   pin = p
-  counter = c
+  min_pw = MIN_PW * 1000
   gpio.mode(pin, gpio.INT)
-  timestamp = tmr.now()
   gpio.trig(pin, "up", elog.pin_up)
+  tmr.alarm(4, MIN_PW, 1, elog.checkPulse);
+end
+
+function elog.checkPulse()
+  if pulse_detected == 1 then
+    elog.counterUp()
+    pulse_detected = 0
+  end
 end
 
 function elog.getCounter()
